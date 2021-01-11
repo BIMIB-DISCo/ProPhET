@@ -33,8 +33,48 @@ function buildD(B, C, P)
         end
     end
 
-
     return map(x->repl(x), result)
+end
+
+function compare(D, G)
+    # compare D (original data) with G (corrected genotypes)
+    total=Dict()
+    for j in allnames(D)[2]
+        fp = 0
+        fn = 0
+        for i in allnames(D)[1]
+            if !ismissing(D[i,j]) && !ismissing(G[i,j])
+                if D[i,j] != G[i,j]
+                    if G[i,j] == 0
+                        fp += 1 #/size(G)[1]
+                    elseif G[i,j]==1
+                        fn += 1 #/size(G)[1]
+                    end
+                end
+            end
+        end
+        push!(total, j => (fp, fn))
+    end
+
+    return total
+end
+
+function check_HP_violation(total, α, β)
+    # find suspicious mutation given alpha and beta
+    # cand = {}
+    for (k,v) in total
+        if v[1] >= α
+            println("FP: $k")
+            # println(α)
+            println(v[1])
+        end
+        if v[2] >= β
+            println("FN: $k")
+            # println(β)
+            println(v[1])
+        end
+
+    end
 end
 
 
@@ -42,10 +82,12 @@ data = load(ARGS[1], convert=true)
 names = load(ARGS[2], convert=true)["names"]
 P = NamedArray(load(ARGS[3], convert=true)["processed_variants"], (names["P_rows"], names["P_cols"]))
 B = NamedArray(data["inference"]["B"], (names["B_rows"], names["B_cols"]))
-# C = Dict(zip(data["inference"]["C"]["Experiment_1"], names))
 C = NamedArray(data["inference"]["C"]["Experiment_1"][:,1], names["C_rows"])
+G = NamedArray(data["inference"]["corrected_genotypes"], (names["G_rows"], names["G_cols"]))
 α = data["inference"]["error_rates"]["alpha"]
 β = data["inference"]["error_rates"]["beta"]
 D = buildD(B, C, P)
-print(findSNV(B,C))
-print(buildD(B, C, P))
+# print(findSNV(B,C))
+# print(allnames(buildD(B, C, P)))
+print(compare(D, G))
+# check_HP_violation(compare(D,G), α, β)
