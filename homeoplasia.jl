@@ -8,8 +8,8 @@ using NamedArrays
 
 function findSNV(B, C)
     genSample = Dict()
-    for i in 2:size(B,1)
-        push!(genSample, i-1 => [k for (k, v) in enumerate(C) if v == i])
+    for i in 2 : size(B, 1)
+        push!(genSample, i - 1 => [k for (k, v) in enumerate(C) if v == i])
     end
     return genSample
 end
@@ -17,7 +17,7 @@ end
 
 function buildD(B, C, P)
     ## Get mutation and sample names
-    mutation_name = filter!(e->e != "Root", allnames(B)[2])
+    mutation_name = filter!(e -> e != "Root", allnames(B)[2])
     sample_name = allnames(C)[1]
 
     ## Build D getting values from P
@@ -36,14 +36,14 @@ function buildD(B, C, P)
     function repl(x)
         if ismissing(x)
             return missing
-        elseif x>=0.9
+        elseif x >= 0.9
             return 1
-        elseif x<0.9
+        elseif x < 0.9
             return 0
         end
     end
 
-    return map(x->repl(x), result)
+    return map(repl, result)
 end
 
 
@@ -89,8 +89,8 @@ function check_HP_violation(total, α, β)
 end
 
 
-data = load(ARGS[1], convert=true)
-names = load(ARGS[2], convert=true)["names"]
+data = load(ARGS[1], convert = true)
+names = load(ARGS[2], convert = true)["names"]
 
 P = NamedArray(load(ARGS[3], convert = true)["processed_variants"],
                (names["P_rows"], names["P_cols"]))
