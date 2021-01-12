@@ -57,9 +57,9 @@ function compare(D, G)
             if !ismissing(D[i,j]) && !ismissing(G[i,j])
                 if D[i,j] != G[i,j]
                     if G[i,j] == 0
-                        fp += 1 #/size(G)[1]
+                        fp += 1/size(G)[1]
                     elseif G[i,j] == 1
-                        fn += 1 #/size(G)[1]
+                        fn += 1/size(G)[1]
                     end
                 end
             end
@@ -74,44 +74,47 @@ end
 function check_HP_violation(total, α, β)
     ## find suspicious mutation given alpha and beta
     ## cand = {}
+    println("Beta = $β")
+    println("Alpha = $α")
+    println()
     for (k,v) in total
         if v[1] >= α
-            println("FP: $k")
-            # println(α)
-            println(v[1])
+            println(k)
+            println("FP: $v\n")
         end
         if v[2] >= β
-            println("FN: $k")
-            # println(β)
-            println(v[1])
+            println(k)
+            println("FN: $v\n")
         end
     end
 end
 
 
 data = load(ARGS[1], convert = true)
-names = load(ARGS[2], convert = true)["names"]
+data_names = load(ARGS[2], convert = true)["names"]
 
-P = NamedArray(load(ARGS[3], convert = true)["processed_variants"],
-               (names["P_rows"], names["P_cols"]))
+# P = NamedArray(load(ARGS[3], convert = true)["processed_variants"],
+#                (data_names["P_rows"], data_names["P_cols"]))
 
-B = NamedArray(data["inference"]["B"],
-               (names["B_rows"], names["B_cols"]))
+# B = NamedArray(data["inference"]["B"],
+#                (data_names["B_rows"], data_names["B_cols"]))
 
-C = NamedArray(data["inference"]["C"]["Experiment_1"][:,1],
-               names["C_rows"])
+# C = NamedArray(data["inference"]["C"]["Experiment_1"][:,1],
+#                data_names["C_rows"])
 
 G = NamedArray(data["inference"]["corrected_genotypes"],
-               (names["G_rows"], names["G_cols"]))
+               (data_names["G_rows"], data_names["G_cols"]))
 
 α = data["inference"]["error_rates"]["alpha"]
 β = data["inference"]["error_rates"]["beta"]
-D = buildD(B, C, P)
+# D = buildD(B, C, P)
+D = NamedArray(load(ARGS[3], convert=true)["clonal_variants_1"],
+               (data_names["C_rows"], data_names["C_cols"]))
 
 ## print(findSNV(B, C))
 ## print(allnames(buildD(B, C, P)))
-print(compare(D, G))
-## check_HP_violation(compare(D,G), α, β)
+# print(compare(D, G))
+check_HP_violation(compare(D,G), α, β)
 
 
 ### end of file -- homeoplasia.jl
