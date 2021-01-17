@@ -89,6 +89,41 @@ function check_HP_violation(total, α, β)
     end
 end
 
+function error_distribution(G, C, D)
+    # compare G with C/B
+    # total = Dict()
+    rows = sort(map(x -> string(x), unique(C)))
+    cols = allnames(D)[2]
+    tot_fp = NamedArray(zeros(length(rows), length(cols)),
+                       (rows, cols))
+
+    tot_fn = NamedArray(zeros(length(rows), length(cols)),
+                        (rows, cols))
+
+    for i in rows
+        for j in cols
+            fp = 0
+            fn = 0
+            cluster = allnames(filter(x -> x == parse(Int32, i), C))[1]
+            for c in cluster
+                if !(ismissing(G[c,j]) || ismissing(D[c,j]))
+                    if G[c,j] != D[c,j]
+                        if G[c,j] == 0
+                            fp += 1
+                        end
+                        if G[c,j] == 1
+                            fn += 1
+                        end
+                    end
+                end
+                tot_fn[i,j] = fn / length(cluster)
+                tot_fp[i,j] = fp / length(cluster)
+            end
+        end
+    end
+
+    return (tot_fp, tot_fn)
+    end
 
 data = load(ARGS[1], convert = true)
 data_names = load(ARGS[2], convert = true)["names"]
@@ -96,11 +131,11 @@ data_names = load(ARGS[2], convert = true)["names"]
 # P = NamedArray(load(ARGS[3], convert = true)["processed_variants"],
 #                (data_names["P_rows"], data_names["P_cols"]))
 
-# B = NamedArray(data["inference"]["B"],
-#                (data_names["B_rows"], data_names["B_cols"]))
+B = NamedArray(data["inference"]["B"],
+               (data_names["B_rows"], data_names["B_cols"]))
 
-# C = NamedArray(data["inference"]["C"]["Experiment_1"][:,1],
-#                data_names["C_rows"])
+C = NamedArray(data["inference"]["C"]["Experiment_1"][:,1],
+               data_names["C_rows"])
 
 G = NamedArray(data["inference"]["corrected_genotypes"],
                (data_names["G_rows"], data_names["G_cols"]))
@@ -115,6 +150,14 @@ D = NamedArray(load(ARGS[3], convert=true)["clonal_variants_1"],
 ## print(allnames(buildD(B, C, P)))
 # print(compare(D, G))
 check_HP_violation(compare(D,G), α, β)
+
+clone_error = error_distribution(G, C, D)
+println(clone_error)
+# for (k,v) in clone_error
+#     println("Clone $k")
+#     println(v)
+#     println()
+# end
 
 
 ### end of file -- homeoplasia.jl
