@@ -4,6 +4,7 @@
 using RData
 using NamedArrays
 include("libs/homeoplasia.jl")
+include("libs/entropy.jl")
 
 data = load(ARGS[1], convert = true)
 data_names = load(ARGS[2], convert = true)["names"]
@@ -33,6 +34,7 @@ Main.ErrorStats.check_HP_violation(Main.ErrorStats.compare(D,G), α, β)
 
 clone_error = Main.ErrorStats.error_distribution(G, C, D)
 println(clone_error)
+Main.Entropy.prob_distribution(clone_error, C, α, β)
 # for (k,v) in clone_error
 #     println("Clone $k")
 #     println(v)

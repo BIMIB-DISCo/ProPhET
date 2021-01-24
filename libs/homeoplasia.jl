@@ -2,7 +2,7 @@
 
 ### homeoplasia.jl
 module ErrorStats
-using RData
+
 using NamedArrays
 using Distributions
 
@@ -95,7 +95,7 @@ function error_distribution(G, C, D)
     rows = sort(map(x -> string(x), unique(C)))
     cols = allnames(D)[2]
     tot_fp = NamedArray(zeros(length(rows), length(cols)),
-                       (rows, cols))
+                        (rows, cols))
 
     tot_fn = NamedArray(zeros(length(rows), length(cols)),
                         (rows, cols))
@@ -116,27 +116,15 @@ function error_distribution(G, C, D)
                         end
                     end
                 end
-                tot_fn[i,j] = fn / length(cluster)
-                tot_fp[i,j] = fp / length(cluster)
+                tot_fn[i,j] = Int64(fn) # / length(cluster)
+                tot_fp[i,j] = Int64(fp) # / length(cluster)
             end
         end
     end
 
     return (tot_fp, tot_fn)
-    end
-
-function prob_distribution(error_dist, C)
-    dist = NamedArray(zeros(size(error_dist)[1], size(error_dist[2])),
-                     (allnames(error_dist)[1], allnames(error_dist)[2]))
-    # number of samples
-    n = Dict([(i, count(x -> x == i, C)) for i in unique(C)])
-
-    for i in 1 : dim(error_dist)[1]
-        for j in 1 : dim(error_dist)[2]
-            dist = Binomial(n[j])
-        end
-    end
 end
+
 
 end
 
