@@ -1,10 +1,10 @@
 ### -*- Mode: Julia -*-
 
 ### homeoplasia.jl
-
+module ErrorStats
 using RData
 using NamedArrays
-
+using Distributions
 
 function findSNV(B, C)
     genSample = Dict()
@@ -125,40 +125,20 @@ function error_distribution(G, C, D)
     return (tot_fp, tot_fn)
     end
 
-data = load(ARGS[1], convert = true)
-data_names = load(ARGS[2], convert = true)["names"]
+function prob_distribution(error_dist, C)
+    dist = NamedArray(zeros(size(error_dist)[1], size(error_dist[2])),
+                     (allnames(error_dist)[1], allnames(error_dist)[2]))
+    # number of samples
+    n = Dict([(i, count(x -> x == i, C)) for i in unique(C)])
 
-# P = NamedArray(load(ARGS[3], convert = true)["processed_variants"],
-#                (data_names["P_rows"], data_names["P_cols"]))
+    for i in 1 : dim(error_dist)[1]
+        for j in 1 : dim(error_dist)[2]
+            dist = Binomial(n[j])
+        end
+    end
+end
 
-B = NamedArray(data["inference"]["B"],
-               (data_names["B_rows"], data_names["B_cols"]))
-
-C = NamedArray(data["inference"]["C"]["Experiment_1"][:,1],
-               data_names["C_rows"])
-
-G = NamedArray(data["inference"]["corrected_genotypes"],
-               (data_names["G_rows"], data_names["G_cols"]))
-
-α = data["inference"]["error_rates"]["alpha"]
-β = data["inference"]["error_rates"]["beta"]
-# D = buildD(B, C, P)
-D = NamedArray(load(ARGS[3], convert=true)["clonal_variants_1"],
-               (data_names["C_rows"], data_names["C_cols"]))
-
-## print(findSNV(B, C))
-## print(allnames(buildD(B, C, P)))
-# print(compare(D, G))
-check_HP_violation(compare(D,G), α, β)
-
-clone_error = error_distribution(G, C, D)
-println(clone_error)
-# for (k,v) in clone_error
-#     println("Clone $k")
-#     println(v)
-#     println()
-# end
-
+end
 
 ### end of file -- homeoplasia.jl
 
