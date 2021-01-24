@@ -34,7 +34,8 @@ Main.ErrorStats.check_HP_violation(Main.ErrorStats.compare(D,G), α, β)
 
 clone_error = Main.ErrorStats.error_distribution(G, C, D)
 println(clone_error)
-Main.Entropy.prob_distribution(clone_error, C, α, β)
+E = Main.Entropy.prob_distribution(clone_error, C, α, β)
+println(E)
 # for (k,v) in clone_error
 #     println("Clone $k")
 #     println(v)
