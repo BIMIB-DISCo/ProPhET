@@ -36,6 +36,7 @@ clone_error = Main.ErrorStats.error_distribution(G, C, D)
 println(clone_error)
 E = Main.Entropy.prob_distribution(clone_error, C, α, β)
 println(E)
+println(Main.Entropy.entropy_array(E))
 # for (k,v) in clone_error
 #     println("Clone $k")
 #     println(v)

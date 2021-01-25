@@ -42,9 +42,15 @@ function entropy(error_p, node)
     #     return 1 / (1 - m) * pᵢ - 1 / (1 - m)
     # end
     m = size(error_p)[2]
-    row = error_p[node]
+    row = error_p[node, :]
 
     return sum([e(i, m) for i in row])
+end
+
+function entropy_array(error_p)
+    result = NamedArray([entropy(error_p, i) for i in allnames(error_p)[1]],
+                        (allnames(error_p))[1])
+    return result
 end
 
 end
