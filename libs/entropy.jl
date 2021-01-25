@@ -32,12 +32,19 @@ function prob_distribution(error_m, C, α, β)
 end
 
 # generic single node entropy function
-function entropy(pᵢ, pˢ, m)
-    if pˢ <= pᵢ / m
-        return pᵢ
-    else
-        return 1 / (1 - m) * pˢ - 1 / (1 - m)
-    end
+# error_p = probability matrix
+# node = rowname
+function entropy(error_p, node)
+    e = ((pᵢ, m) -> pᵢ <= pᵢ / m ? pᵢ :  1 / (1 - m) * pᵢ - 1 / (1 - m))
+    # if pᵢ <= pᵢ / m
+    #     return pᵢ
+    # else
+    #     return 1 / (1 - m) * pᵢ - 1 / (1 - m)
+    # end
+    m = size(error_p)[2]
+    row = error_p[node]
+
+    return sum([e(i, m) for i in row])
 end
 
 end
