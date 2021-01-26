@@ -25,9 +25,16 @@ function prob_distribution(error_m, C, α, β)
         for j in 1 : s[2]
             current = parse(Int, rows[i])
             result[i,j] = node_prob(n[current], Int(error_m[1][i,j]),
-                                    Int(error_m[2][i,j]), α, β)
+                                     Int(error_m[2][i,j]), α, β)
         end
     end
+    # for i in allnames(error_m[1])[1]
+    #     for j in allnames(error_m[1])[2]
+    #         current = parse(Int, i)
+    #         result[i,j] = node_prob(n[current], Int(error_m[1][i,j]),
+    #                                 Int(error_m[2][i,j]), α, β)
+    #     end
+    # end
     return result
 end
 
@@ -35,12 +42,8 @@ end
 # error_p = probability matrix
 # node = rowname
 function entropy(error_p, node)
-    e = ((pᵢ, m) -> pᵢ <= pᵢ / m ? pᵢ :  1 / (1 - m) * pᵢ - 1 / (1 - m))
-    # if pᵢ <= pᵢ / m
-    #     return pᵢ
-    # else
-    #     return 1 / (1 - m) * pᵢ - 1 / (1 - m)
-    # end
+    # e = ((pᵢ, m) -> pᵢ <= pᵢ / m ? pᵢ :  1 / (1 - m) * pᵢ - 1 / (1 - m))
+    e = ((pᵢ, m) -> pᵢ > 1 / m ? (1 / (1 - m)) * ( pᵢ - 1) : (1/m))
     m = size(error_p)[2]
     row = error_p[node, :]
 
