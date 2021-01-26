@@ -43,7 +43,7 @@ end
 # node = rowname
 function entropy(error_p, node)
     # e = ((pᵢ, m) -> pᵢ <= pᵢ / m ? pᵢ :  1 / (1 - m) * pᵢ - 1 / (1 - m))
-    e = ((pᵢ, m) -> pᵢ > 1 / m ? (1 / (1 - m)) * ( pᵢ - 1) : (1/m))
+    e = ((pᵢ, m) -> pᵢ > 1 / m ? (1 / (1 - m)) * ( pᵢ - 1) : pᵢ)
     m = size(error_p)[2]
     row = error_p[node, :]
 
