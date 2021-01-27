@@ -5,6 +5,7 @@ using RData
 using NamedArrays
 include("libs/homeoplasia.jl")
 include("libs/entropy.jl")
+include("libs/bioModel.jl")
 
 data = load(ARGS[1], convert = true)
 data_names = load(ARGS[2], convert = true)["names"]
@@ -36,7 +37,11 @@ clone_error = Main.ErrorStats.error_distribution(G, C, D)
 println(clone_error)
 E = Main.Entropy.prob_distribution(clone_error, C, α, β)
 println(E)
-println(Main.Entropy.entropy_array(E))
+entropyV = Main.Entropy.entropy_array(E)
+println(entropyV)
+
+Main.BioModel.inference(entropyV, 10000, 1)
+
 # for (k,v) in clone_error
 #     println("Clone $k")
 #     println(v)
