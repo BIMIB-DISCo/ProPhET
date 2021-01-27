@@ -40,8 +40,8 @@ println(E)
 entropyV = Main.Entropy.entropy_array(E)
 println(entropyV)
 
-Main.BioModel.inference(entropyV, 10000, 1)
-
+inf = Main.BioModel.inference(entropyV, 10000, 1)
+Main.BioModel.save_plot(inf, "./sample.png")
 # for (k,v) in clone_error
 #     println("Clone $k")
 #     println(v)

@@ -21,11 +21,12 @@ using StatsPlots
 end
 
 function inference(data, n, λ)
-    # plotly()
-    gr()
-    e = sample(mutation(data, λ), Gibbs(MH(:α), MH(:β)), n)
-    savefig(plot(e, fontfamily = "Symbol"), "./sample.png")
+    return sample(mutation(data, λ), Gibbs(MH(:α), MH(:β)), n)
 end
 
+function save_plot(inf, filename)
+    gr()
+    savefig(plot(inf, fontfamily = "Symbol"), "./sample.png")
+end
 end
 ### end of file -- bioModel.jl
