@@ -26,9 +26,11 @@ G = NamedArray(data["inference"]["corrected_genotypes"],
 α = data["inference"]["error_rates"]["alpha"]
 β = data["inference"]["error_rates"]["beta"]
 # D = buildD(B, C, P)
-D = NamedArray(load(ARGS[3], convert=true)["clonal_variants_1"],
-               (data_names["C_rows"], data_names["C_cols"]))
-
+# D = NamedArray(load(ARGS[3], convert=true)["clonal_variants_1"],
+#                (data_names["C_rows"], data_names["C_cols"]))
+clonal_variants = NamedArray(load(ARGS[3], convert=true)["clonal_variants"],
+                             (data_names["CL_rows"], data_names["CL_cols"]))
+D = Main.ErrorStats.buildD_clonal(clonal_variants, 0.030)
 ## print(findSNV(B, C))
 ## print(allnames(buildD(B, C, P)))
 # print(compare(D, G))
@@ -45,7 +47,7 @@ println(entropyV)
 # Main.BioModel.save_plot(inf, "./sample.png")
 
 # println(Main.BioModel.inference(entropyV, 1000, 1))
-a, b, t = Main.BioModel.optimal(entropyV, 1000, 1, 0.01)
+a, b, t = Main.BioModel.optimal(entropyV, 10000, 1, 0.01)
 println(a)
 println(b)
 savefig(plot(a), "./a.png")

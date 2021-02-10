@@ -46,6 +46,22 @@ function buildD(B, C, P)
     return map(repl, result)
 end
 
+function buildD_clonal(cl, p)
+    # manual skip missing
+    s = sum(map(x -> ismissing(x) ? 0 : x, cl), dims=1)[1,:] / size(cl)[1]
+
+    # filter! is not supported by NamedArray
+    # s = filter!(x -> x> 0.030, e)
+    #
+    # workaround:
+    # get mutations names
+    mut = [allnames(s)[1][i] for i in 1 : length(s) if s[i] > p]
+
+    # foldl cl columns for the mutations names in mut
+    return NamedArray(foldl(hcat, [cl[:,i] for i in mut]),
+                      (allnames(cl)[1], mut))
+end
+
 
 function compare(D, G)
     ## compare D (original data) with G (corrected genotypes)
