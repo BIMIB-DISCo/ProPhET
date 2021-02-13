@@ -14,7 +14,7 @@ using StatsPlots
 @model function opt_α(y, λ, β)
     α ~ Exponential(λ)
     # β ~ Exponential(λ)
-    dist ~ Beta(α, mean(β))
+    dist ~ Beta(α, β)
     s = sum([log(i) for i in y])
     w = (dist ^ - length(y)) ^ (- α * (λ - s))
     Turing.@addlogprob! w
@@ -48,8 +48,8 @@ function inference(data, n, λ)
     return [α, β]
 end
 
-function optimal(data, n, λ, error)
-    α = β = 10
+function optimalB(data, n, λ, error)
+    α = β = 1
     temp_β = mean(sample(mutation(data, λ), Gibbs(MH(:α), MH(:β)), n)[:β])
     temp_α = mean(sample(opt_α(data, λ, temp_β), Gibbs(MH(:α)), n)[:α])
     # tmp = 0
@@ -74,8 +74,29 @@ function optimal(data, n, λ, error)
 
 end
 
+function optimal(data, n, λ, error)
+    α = β = 1
+    temp_β = mean(sample(mutation(data, λ), Gibbs(MH(:α), MH(:β)), n)[:β])
+    temp_α = mean(sample(opt_α(data, λ, temp_β), Gibbs(MH(:α)), n)[:α])
+    # tmp = 0
+    # while tmp <= 2
+    lα = []
+    lβ = []
+    lt = []
+    # end
+    while abs(β - temp_β) > error * temp_β
+        temp_β = β
+        β = mean(sample(opt_β(data, λ, temp_α), NUTS(), n)[:β])
+        append!(lβ, β)
+    end
+    while abs(α - temp_α) > error * temp_α
+        temp_α = α
+        α = mean(sample(opt_α(data, λ, temp_β), NUTS(), n)[:α])
+        append!(lα, α)
+        append!(lt, abs(α - temp_α))
+    end
+    return [lα, lβ, lt]
 
-function tmp_α(beta)
 end
 
 function save_plot(inf, filename)
