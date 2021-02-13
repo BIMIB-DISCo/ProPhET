@@ -46,11 +46,10 @@ println(entropyV)
 # inf = Main.BioModel.inference(entropyV, 10000, 1)
 # Main.BioModel.save_plot(inf, "./sample.png")
 
-# println(Main.BioModel.inference(entropyV, 1000, 1))
-a, b, t = Main.BioModel.optimal(entropyV, 10000, 1, 0.01)
+a, b = Main.BioModel.optimal(entropyV, 10000, 1, 0.01)
+savefig(plot(a), "a.png")
+savefig(plot(b), "b.png")
 println(a)
 println(b)
-savefig(plot(a), "./a.png")
-savefig(plot(b), "./b.png")
-savefig(plot(t), "./t.png")
+
 ### end of file -- ProPhET.jl
