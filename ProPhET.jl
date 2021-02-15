@@ -2,7 +2,6 @@
 
 ### ProPhET.jl
 using RData
-using Plots
 using NamedArrays
 include("libs/homeoplasia.jl")
 include("libs/entropy.jl")
@@ -46,10 +45,10 @@ println(entropyV)
 # inf = Main.BioModel.inference(entropyV, 10000, 1)
 # Main.BioModel.save_plot(inf, "./sample.png")
 
-a, b = Main.BioModel.optimal(entropyV, 10000, 1, 0.01)
-savefig(plot(a), "a.png")
-savefig(plot(b), "b.png")
-println(a)
-println(b)
-
+# a, b = Main.BioModel.optimal(entropyV, 10000, 1, 0.01)
+# savefig(plot(a), "a.png")
+# savefig(plot(b), "b.png")
+# println(a)
+# println(b)
+sa, sb = Main.BioModel.opt(entropyV, 10000, 1, "nuovi")
 ### end of file -- ProPhET.jl
