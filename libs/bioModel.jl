@@ -10,6 +10,7 @@ using Distributions
 ENV["GKS_ENCODING"]="utf-8"
 using Plots
 using StatsPlots
+using Expectations
 
 @model function opt_α(y, λ, β)
     α ~ Exponential(λ)
@@ -21,7 +22,7 @@ end
 
 @model function opt_β(y, λ, α)
     β ~ Exponential(λ)
-    dist ~ Beta(α, β)
+    dist = expectation(Beta(α, β))
     s = sum([log(1 - i) for i in y])
     w = (dist ^ - length(y)) * exp((- β * (λ - s)))
     Turing.@addlogprob! w
@@ -46,18 +47,28 @@ function sampling_NUTS(var, model, par, data, n, λ)
     return sample(model(data, λ, par), NUTS(), n)
 end
 
+# function opt_two_steps(data, n, λ, figure)
+#     tmp_α = rand(Exponential(λ))
+#     β = sample(opt_β(data, λ, tmp_α), NUTS(), n)
+#     save_plot(β, string(figure, "b.png"))
+
+# end
+
+
 function opt(data, n, λ, figure)
     # sa = sample(opt(data, λ), Gibbs(MH(:α), MH(:β), MH(:dist)), n)
     # sb = sample(opt(data, λ), Gibbs(MH(:α), MH(:β), MH(:dist)), n)
-    sa = sample(opt(data, λ), NUTS(), n)
-    sb = sample(opt(data, λ), NUTS(), n)
-    println(mean(sa[:α]))
-    println(mean(sa[:β]))
-    println(mean(sb[:α]))
-    println(mean(sb[:β]))
+    sa = sample(opt(data, λ), NUTS(10, 0.85), n)
+    sb = sample(opt(data, λ), NUTS(10, 0.85), n)
     save_plot(sa, string(figure, "a.png"))
     save_plot(sb, string(figure, "b.png"))
     return [sa, sb]
+end
+
+function get_δ(a, b)
+    sample_α = a[:α]
+    sample_β = b[:β]
+    return mean(map((x, y) -> x / y, sample_α, sample_β))
 end
 
 function generic_optimal(model, var, par, data, n, λ, error, figure)

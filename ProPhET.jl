@@ -51,4 +51,6 @@ println(entropyV)
 # println(a)
 # println(b)
 sa, sb = Main.BioModel.opt(entropyV, 10000, 1, "nuovi")
+println(string("δ = ", Main.BioModel.get_δ(sa, sb)))
+# Main.BioModel.opt_two_steps(entropyV, 10000, 1, "nuovi")
 ### end of file -- ProPhET.jl
