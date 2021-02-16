@@ -68,7 +68,7 @@ end
 function get_δ(a, b)
     sample_α = a[:α]
     sample_β = b[:β]
-    return mean(map((x, y) -> x / y, sample_α, sample_β))
+    return mean(map((x, y) -> y / x, sample_α, sample_β))
 end
 
 function generic_optimal(model, var, par, data, n, λ, error, figure)
