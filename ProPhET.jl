@@ -8,7 +8,7 @@ include("libs/entropy.jl")
 include("libs/bioModel.jl")
 
 data = load(ARGS[1], convert = true)
-data_names = load(ARGS[2], convert = true)["names"]
+data_names = load(ARGS[3], convert = true)["names"]
 
 # P = NamedArray(load(ARGS[3], convert = true)["processed_variants"],
 #                (data_names["P_rows"], data_names["P_cols"]))
@@ -27,7 +27,7 @@ G = NamedArray(data["inference"]["corrected_genotypes"],
 # D = buildD(B, C, P)
 # D = NamedArray(load(ARGS[3], convert=true)["clonal_variants_1"],
 #                (data_names["C_rows"], data_names["C_cols"]))
-clonal_variants = NamedArray(load(ARGS[3], convert=true)["clonal_variants"],
+clonal_variants = NamedArray(load(ARGS[2], convert=true)["clonal_variants"],
                              (data_names["CL_rows"], data_names["CL_cols"]))
 D = Main.ErrorStats.buildD_clonal(clonal_variants, 0.030)
 ## print(findSNV(B, C))
@@ -51,7 +51,7 @@ println(entropyV)
 # println(a)
 # println(b)
 # sa, sb = Main.BioModel.opt(entropyV, 10000, 0.1, "nuovi")
-sa, sb = Main.BioModel.opt(entropyV, 400000, 0.1, "nuovi")
+sa, sb = Main.BioModel.opt(entropyV, 400000, 0.1, "plotName")
 println(string("δ = ", Main.BioModel.get_δ(sa, sb)))
 # Main.BioModel.opt_two_steps(entropyV, 10000, 1, "nuovi")
 ### end of file -- ProPhET.jl
