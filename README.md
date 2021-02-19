@@ -11,11 +11,26 @@ ProPhET takes in input the following files:
     - C matrix
     - corrected_genotypes
     - clonal_variants
+### Input preparation
+To build **names** it is possible to export the data from R:
+```R
+names = list("B_rows" = rownames(inference$B), "B_cols"=colnames(inference$B),
+"C_rows"=rownames(inference$C$Experiment_1),
+"G_rows"=rownames(inference$corrected_genotypes),
+"G_cols"=colnames(inference$corrected_genotypes),
+"CL_rows"=rownames(clonal_variants), "CL_cols"=colnames(clonal_variants))
+save(names, file="~/names.RData")
+```
+
+## Inference
+ProPhET computes the entropy value of each node and uses the entropy vector to
+perform a Bayesian inference. The sampling process is built with
+```julia
+Gibbs(MH(:alpha), MH(:beta))
+```
 
 ## Output
 The output of ProPhET is a real number $\delta$. An high value of $\delta$ means
 that the phylogenetic signals are more informative. A low value of $\delta$ 
 could suggest that a case of homoplasia could be present in the phylogenetic 
 tree.
-
-
