@@ -30,13 +30,13 @@ save(names, file="~/names.RData")
 $ julia ProPhET.jl inference.RData clonal_variants.RData names.RData
 ```
 Is also possible to specify the following optional parameters:
-| Parameter | Effect                                     |                Type | Default |
+| Parameter | Effect                                     | Type                | Default |
 |-----------|--------------------------------------------|---------------------|---------|
-| --sampler | Set samper                                | String (NUTS or MH) |    NUTS |
-| --n       | Set the number of generated samples        |               40000 |   40000 |
-| --lambda  | Set the lambda hyperparameter              |                 0.1 |     0.1 |
-| --error   | Set the error rate for mutations selection |               0.030 |   0.030 |
-| --pltName | Set the plots filename prefix              |               plot_ |   plot_ |
+| --sampler | Set samper                                 | String (NUTS or MH) |    NUTS |
+| --n       | Set the number of generated samples        | Integer             |   40000 |
+| --lambda  | Set the lambda hyperparameter              | Float64             |     0.1 |
+| --error   | Set the error rate for mutations selection | Float64             |   0.030 |
+| --pltName | Set the plots filename prefix              | String              |   plot_ |
 
 ## Inference
 ProPhET computes the entropy value of each node and uses the entropy vector to
