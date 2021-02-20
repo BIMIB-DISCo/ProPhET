@@ -18,7 +18,7 @@ include("libs/bioModel.jl")
                          dataNames::AbstractString;
                          sampler::AbstractString="NUTS",
                          n::Integer=40000,
-                         λ::Float64=0.1,
+                         lambda::Float64=0.1,
                          error::Float64=0.030,
                          pltName::AbstractString="plot_")
     println(n)
@@ -57,7 +57,7 @@ include("libs/bioModel.jl")
     entropyV = Main.Entropy.entropy_array(E)
     println(entropyV)
 
-    sa, sb = Main.BioModel.opt(entropyV, n, λ, sampler, pltName)
+    sa, sb = Main.BioModel.opt(entropyV, n, lambda, sampler, pltName)
     println(string("δ = ", Main.BioModel.get_δ(sa, sb)))
 end
 ### end of file -- ProPhET.jl
