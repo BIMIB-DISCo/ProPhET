@@ -22,11 +22,14 @@ using Random
 end
 
 
-function opt(data, n, λ, figure)
-    sa = sample(mutation(data, λ), Gibbs(MH(:α), MH(:β)), n)
-    sb = sample(mutation(data, λ), Gibbs(MH(:α), MH(:β)), n)
-    # sa = sample(opt(data, λ), NUTS(), n)
-    # sb = sample(opt(data, λ), NUTS(), n)
+function opt(data, n, λ, sampler, figure)
+    if sampler == "NUTS"
+        sa = sample(mutation(data, λ), NUTS(), n)
+        sb = sample(mutation(data, λ), NUTS(), n)
+    elseif sampler == "MH"
+        sa = sample(mutation(data, λ), Gibbs(MH(:α), MH(:β)), n)
+        sb = sample(mutation(data, λ), Gibbs(MH(:α), MH(:β)), n)
+    end
     save_plot(sa, string(figure, "a.png"))
     save_plot(sb, string(figure, "b.png"))
     return [sa, sb]

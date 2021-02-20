@@ -3,55 +3,61 @@
 ### ProPhET.jl
 using RData
 using NamedArrays
+using Fire
 include("libs/homeoplasia.jl")
 include("libs/entropy.jl")
 include("libs/bioModel.jl")
+# "inference: VERSO step 1 output \n
+# clonalVariants: VERSO input \n
+# n: number of samples \n
+# λ: hyperparameter of α and β exponential distributions\n
+# error: error for D generation\n
+# pltName: prefix of the plot filename\n\n"
+@main function inference(inference::AbstractString,
+                         clonalVariants::AbstractString,
+                         dataNames::AbstractString;
+                         sampler::AbstractString="NUTS",
+                         n::Integer=40000,
+                         λ::Float64=0.1,
+                         error::Float64=0.030,
+                         pltName::AbstractString="plot_")
+    println(n)
+    data = load(inference, convert = true)
+    data_names = load(dataNames, convert = true)["names"]
 
-data = load(ARGS[1], convert = true)
-data_names = load(ARGS[3], convert = true)["names"]
+    # P = NamedArray(load(ARGS[3], convert = true)["processed_variants"],
+    #                (data_names["P_rows"], data_names["P_cols"]))
 
-# P = NamedArray(load(ARGS[3], convert = true)["processed_variants"],
-#                (data_names["P_rows"], data_names["P_cols"]))
+    B = NamedArray(data["inference"]["B"],
+                   (data_names["B_rows"], data_names["B_cols"]))
 
-B = NamedArray(data["inference"]["B"],
-               (data_names["B_rows"], data_names["B_cols"]))
+    C = NamedArray(data["inference"]["C"]["Experiment_1"][:,1],
+                   data_names["C_rows"])
 
-C = NamedArray(data["inference"]["C"]["Experiment_1"][:,1],
-               data_names["C_rows"])
+    G = NamedArray(data["inference"]["corrected_genotypes"],
+                   (data_names["G_rows"], data_names["G_cols"]))
 
-G = NamedArray(data["inference"]["corrected_genotypes"],
-               (data_names["G_rows"], data_names["G_cols"]))
+    α = data["inference"]["error_rates"]["alpha"]
+    β = data["inference"]["error_rates"]["beta"]
+    # D = buildD(B, C, P)
+    # D = NamedArray(load(ARGS[3], convert=true)["clonal_variants_1"],
+    #                (data_names["C_rows"], data_names["C_cols"]))
+    clonal_variants = NamedArray(load(clonalVariants, convert=true)["clonal_variants"],
+                                 (data_names["CL_rows"], data_names["CL_cols"]))
+    D = Main.ErrorStats.buildD_clonal(clonal_variants, error)
+    ## print(findSNV(B, C))
+    ## print(allnames(buildD(B, C, P)))
+    # print(compare(D, G))
+    Main.ErrorStats.check_HP_violation(Main.ErrorStats.compare(D,G), α, β)
 
-α = data["inference"]["error_rates"]["alpha"]
-β = data["inference"]["error_rates"]["beta"]
-# D = buildD(B, C, P)
-# D = NamedArray(load(ARGS[3], convert=true)["clonal_variants_1"],
-#                (data_names["C_rows"], data_names["C_cols"]))
-clonal_variants = NamedArray(load(ARGS[2], convert=true)["clonal_variants"],
-                             (data_names["CL_rows"], data_names["CL_cols"]))
-D = Main.ErrorStats.buildD_clonal(clonal_variants, 0.030)
-## print(findSNV(B, C))
-## print(allnames(buildD(B, C, P)))
-# print(compare(D, G))
-Main.ErrorStats.check_HP_violation(Main.ErrorStats.compare(D,G), α, β)
+    clone_error = Main.ErrorStats.error_distribution(G, C, D)
+    println(clone_error)
+    E = Main.Entropy.prob_distribution(clone_error, C, α, β)
+    println(E)
+    entropyV = Main.Entropy.entropy_array(E)
+    println(entropyV)
 
-clone_error = Main.ErrorStats.error_distribution(G, C, D)
-println(clone_error)
-E = Main.Entropy.prob_distribution(clone_error, C, α, β)
-println(E)
-entropyV = Main.Entropy.entropy_array(E)
-println(entropyV)
-
-# inf = Main.BioModel.inference(entropyV, 10000, 1)
-# Main.BioModel.save_plot(inf, "./sample.png")
-
-# a, b = Main.BioModel.optimal(entropyV, 10000, 1, 0.01)
-# savefig(plot(a), "a.png")
-# savefig(plot(b), "b.png")
-# println(a)
-# println(b)
-# sa, sb = Main.BioModel.opt(entropyV, 10000, 0.1, "nuovi")
-sa, sb = Main.BioModel.opt(entropyV, 400000, 0.1, "plotName")
-println(string("δ = ", Main.BioModel.get_δ(sa, sb)))
-# Main.BioModel.opt_two_steps(entropyV, 10000, 1, "nuovi")
+    sa, sb = Main.BioModel.opt(entropyV, n, λ, sampler, pltName)
+    println(string("δ = ", Main.BioModel.get_δ(sa, sb)))
+end
 ### end of file -- ProPhET.jl
