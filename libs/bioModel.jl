@@ -4,16 +4,13 @@
 
 module BioModel
 
-using NamedArrays
 using Turing
 using Distributions
 ENV["GKS_ENCODING"]="utf-8"
 using Plots
 using StatsPlots
-using SpecialFunctions
-using Random
 
-@model function mutation(y, λ)
+@model function mutation(y::Array{Float64,1}, λ::Float64)
     α ~ Exponential(λ)
     β ~ Exponential(λ)
     for i in 1 : length(y)
@@ -22,7 +19,8 @@ using Random
 end
 
 
-function opt(data, n, λ, sampler, figure)
+function opt(data::Array{Float64,1}, n::Integer, λ::Float64, sampler,
+    figure::String)
     if sampler == "NUTS"
         sa = sample(mutation(data, λ), NUTS(), n)
         sb = sample(mutation(data, λ), NUTS(), n)
@@ -44,7 +42,7 @@ function get_δ(a, b)
 end
 
 
-function save_plot(inf, filename)
+function save_plot(inf, filename::String)
     gr()
     savefig(plot(inf, fontfamily = "Symbol"), filename)
 end

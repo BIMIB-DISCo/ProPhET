@@ -6,14 +6,15 @@ module Entropy
 using NamedArrays
 
 # define single node distribution
-function node_prob(n, fp, fn, α, β)
+function node_prob(n::Integer, fp::Integer, fn::Integer, α::Float64, β::Float64)
     bin = ((x, fx, ξ) -> binomial(big(n), fx) * ξ ^ fx * (1 - ξ) ^ (n - fx))
 
     return bin(n, fp, α) * bin(n, fn, β)
 end
 
 # build error matrix distribution given C, α, β
-function prob_distribution(error_m, C, α, β)
+function prob_distribution(error_m::Tuple{NamedArray, NamedArray},
+                           C::NamedArray, α::Float64, β::Float64)
     s = size(error_m[1])
     rows = allnames(error_m[1])[1]
     result = NamedArray(zeros(s[1], s[2]),
@@ -41,7 +42,7 @@ end
 # generic single node entropy function
 # error_p = probability matrix
 # node = rowname
-function entropy(error_p, node)
+function entropy(error_p::NamedArray, node)
     # e = ((pᵢ, m) -> pᵢ <= pᵢ / m ? pᵢ :  1 / (1 - m) * pᵢ - 1 / (1 - m))
     e = ((pᵢ, m) -> pᵢ > 1 / m ? (1 / (1 - m)) * ( pᵢ - 1) : pᵢ)
     m = size(error_p)[2]
@@ -50,7 +51,7 @@ function entropy(error_p, node)
     return sum([e(i, m) for i in row])
 end
 
-function entropy_array(error_p)
+function entropy_array(error_p::NamedArray)
     result = NamedArray([entropy(error_p, i) for i in allnames(error_p)[1]],
                         (allnames(error_p))[1])
     return result

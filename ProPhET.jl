@@ -7,6 +7,7 @@ using Fire
 include("libs/homeoplasia.jl")
 include("libs/entropy.jl")
 include("libs/bioModel.jl")
+
 @main function inference(inference::AbstractString,
                          clonalVariants::AbstractString,
                          dataNames::AbstractString;
@@ -15,7 +16,6 @@ include("libs/bioModel.jl")
                          lambda::Float64=0.1,
                          error::Float64=0.030,
                          pltName::AbstractString="plot_")
-    println(n)
     data = load(inference, convert = true)
     data_names = load(dataNames, convert = true)["names"]
 
@@ -36,7 +36,8 @@ include("libs/bioModel.jl")
     # D = buildD(B, C, P)
     # D = NamedArray(load(ARGS[3], convert=true)["clonal_variants_1"],
     #                (data_names["C_rows"], data_names["C_cols"]))
-    clonal_variants = NamedArray(load(clonalVariants, convert=true)["clonal_variants"],
+    clonal_variants = NamedArray(load(clonalVariants,
+                                      convert=true)["clonal_variants"],
                                  (data_names["CL_rows"], data_names["CL_cols"]))
     D = Main.ErrorStats.buildD_clonal(clonal_variants, error)
     ## print(findSNV(B, C))
@@ -51,7 +52,7 @@ include("libs/bioModel.jl")
     entropyV = Main.Entropy.entropy_array(E)
     println(entropyV)
 
-    sa, sb = Main.BioModel.opt(entropyV, n, lambda, sampler, pltName)
+    sa, sb = Main.BioModel.opt(Array(entropyV), n, lambda, sampler, pltName)
     println(string("δ = ", Main.BioModel.get_δ(sa, sb)))
 end
 ### end of file -- ProPhET.jl

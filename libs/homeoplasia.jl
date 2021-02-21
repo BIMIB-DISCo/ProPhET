@@ -6,7 +6,7 @@ module ErrorStats
 using NamedArrays
 using Distributions
 
-function findSNV(B, C)
+function findSNV(B::NamedArray, C::NamedArray)
     genSample = Dict()
     for i in 2 : size(B, 1)
         push!(genSample, i - 1 => [k for (k, v) in enumerate(C) if v == i])
@@ -46,7 +46,7 @@ function buildD(B, C, P)
     return map(repl, result)
 end
 
-function buildD_clonal(cl, p)
+function buildD_clonal(cl::NamedArray, p::Float64)
     # manual skip missing
     s = sum(map(x -> ismissing(x) ? 0 : x, cl), dims=1)[1,:] / size(cl)[1]
 
@@ -63,7 +63,7 @@ function buildD_clonal(cl, p)
 end
 
 
-function compare(D, G)
+function compare(D::NamedArray, G::NamedArray)
     ## compare D (original data) with G (corrected genotypes)
     total = Dict()
     for j in allnames(D)[2]
@@ -87,7 +87,7 @@ function compare(D, G)
 end
 
 
-function check_HP_violation(total, α, β)
+function check_HP_violation(total::Dict{}, α::Float64, β::Float64)
     ## find suspicious mutation given alpha and beta
     ## cand = {}
     println("Beta = $β")
@@ -105,7 +105,7 @@ function check_HP_violation(total, α, β)
     end
 end
 
-function error_distribution(G, C, D)
+function error_distribution(G::NamedArray, C::NamedArray, D::NamedArray)
     # compare G with C/B
     # total = Dict()
     rows = sort(map(x -> string(x), unique(C)))
