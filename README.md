@@ -40,10 +40,12 @@ Is also possible to specify the following optional parameters:
 
 ## Inference
 ProPhET computes the entropy value of each node and uses the entropy vector to
-perform a Bayesian inference. The sampling process is built with
-```julia
-Gibbs(MH(:alpha), MH(:beta))
-```
+perform a Bayesian inference. The sampling process can be built with the
+following methos:
+| --sampler value | Sampler                                  |
+|-----------------|------------------------------------------|
+| MH              | ```julia Gibbs(MH(:alpha), MH(:beta))``` |
+| NUTS            | ```julia NUTS()```                       |
 
 ## Output
 The output of ProPhET is a real number $\delta$. An high value of $\delta$ means

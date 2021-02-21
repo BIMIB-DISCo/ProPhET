@@ -7,12 +7,6 @@ using Fire
 include("libs/homeoplasia.jl")
 include("libs/entropy.jl")
 include("libs/bioModel.jl")
-# "inference: VERSO step 1 output \n
-# clonalVariants: VERSO input \n
-# n: number of samples \n
-# λ: hyperparameter of α and β exponential distributions\n
-# error: error for D generation\n
-# pltName: prefix of the plot filename\n\n"
 @main function inference(inference::AbstractString,
                          clonalVariants::AbstractString,
                          dataNames::AbstractString;
