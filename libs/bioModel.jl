@@ -6,9 +6,11 @@ module BioModel
 
 using Turing
 using Distributions
+using SpecialFunctions
 ENV["GKS_ENCODING"]="utf-8"
 using Plots
 using StatsPlots
+using Statistics
 
 @model function mutation(y::Array{Float64,1}, λ::Float64)
     α ~ Exponential(λ)
@@ -41,11 +43,31 @@ function get_δ(a, b)
     return mean(map((x, y) -> y / x, sample_α, sample_β))
 end
 
-
 function save_plot(inf, filename::String)
     gr()
     savefig(plot(inf, fontfamily = "Symbol"), filename)
 end
+
+function print_stats(values::Array{Any,1})
+    return [Statistics.mean(values), Statistics.std(values)]
+end
+
+function variation(data::Array{Float64,1}, λ::Float64, n::Integer,
+                   sampler::String, figure::String, exc::Integer)
+    va = []
+    vb = []
+    vδ = []
+    for i in 1:exc
+        println(sampler)
+        sa, sb = opt(data, n, λ, sampler, figure)
+        push!(va, mean(sa[:α]))
+        push!(vb, mean(sb[:β]))
+        push!(vδ, get_δ(sa,sb))
+    end
+    savefig(plot([va, vb, vδ], label = ["α" "β" "δ"]), "./var_a.png")
+    return map(x -> print_stats(x), [va, vb, vδ])
+end
+
 end
 
 ### end of file -- bioModel.jl
