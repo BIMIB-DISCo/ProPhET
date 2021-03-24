@@ -1,6 +1,7 @@
 ### -*- Mode: Julia -*-
 
 ### homeoplasia.jl
+
 module ErrorStats
 
 using NamedArrays
@@ -105,9 +106,10 @@ function check_HP_violation(total::Dict{}, α::Float64, β::Float64)
     end
 end
 
+
 function error_distribution(G::NamedArray, C::NamedArray, D::NamedArray)
-    # compare G with C/B
-    # total = Dict()
+    ## compare G with C/B
+    ## total = Dict()
     rows = sort(map(x -> string(x), unique(C)))
     cols = allnames(D)[2]
     tot_fp = NamedArray(zeros(length(rows), length(cols)),
@@ -141,8 +143,6 @@ function error_distribution(G::NamedArray, C::NamedArray, D::NamedArray)
     return (tot_fp, tot_fn)
 end
 
-
 end
 
 ### end of file -- homeoplasia.jl
-
