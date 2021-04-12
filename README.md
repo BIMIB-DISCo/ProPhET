@@ -24,7 +24,7 @@ names = list("B_rows" = rownames(inference$B),
              "G_rows" = rownames(inference$corrected_genotypes),
              "G_cols" = colnames(inference$corrected_genotypes),
              "CL_rows" = rownames(clonal_variants),
-			 "CL_cols" = colnames(clonal_variants))
+             "CL_cols" = colnames(clonal_variants))
 save(names, file="~/names.RData")
 ```
 
