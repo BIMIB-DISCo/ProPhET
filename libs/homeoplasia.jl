@@ -7,6 +7,7 @@ module ErrorStats
 using NamedArrays
 using Distributions
 
+
 function findSNV(B::NamedArray, C::NamedArray)
     genSample = Dict()
     for i in 2 : size(B, 1)
@@ -46,6 +47,7 @@ function buildD(B, C, P)
 
     return map(repl, result)
 end
+
 
 function buildD_clonal(cl::NamedArray, p::Float64)
     # manual skip missing
@@ -89,7 +91,7 @@ end
 
 
 function check_HP_violation(total::Dict{}, α::Float64, β::Float64)
-    ## find suspicious mutation given alpha and beta
+    ## Find suspicious mutation given alpha and beta
     ## cand = {}
     println("Beta = $β")
     println("Alpha = $α")
@@ -107,7 +109,9 @@ function check_HP_violation(total::Dict{}, α::Float64, β::Float64)
 end
 
 
-function error_distribution(G::NamedArray, C::NamedArray, D::NamedArray)
+function error_distribution(G::NamedArray,
+                            C::NamedArray,
+                            D::NamedArray) 
     ## compare G with C/B
     ## total = Dict()
     rows = sort(map(x -> string(x), unique(C)))
@@ -122,7 +126,8 @@ function error_distribution(G::NamedArray, C::NamedArray, D::NamedArray)
         for j in cols
             fp = 0
             fn = 0
-            cluster = allnames(filter(x -> x == parse(Int32, i), C))[1]
+            cluster =
+                allnames(filter(x -> x == parse(Int32, i), C))[1]
             for c in cluster
                 if !(ismissing(G[c,j]) || ismissing(D[c,j]))
                     if G[c,j] != D[c,j]
@@ -143,6 +148,6 @@ function error_distribution(G::NamedArray, C::NamedArray, D::NamedArray)
     return (tot_fp, tot_fn)
 end
 
-end
+end                             # Module ErrorStats
 
 ### end of file -- homeoplasia.jl
